@@ -1,11 +1,9 @@
-# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
+# My Talks
 
-To start the slide show:
+Made using [Slidev](https://sli.dev/).
 
-- `npm install`
-- `npm run dev`
-- visit <http://localhost:3030>
+```bash
+pnpm run dev slides/<slide-name>/<slide-name>.md
+```
 
-Edit the [slides.md](./slides.md) to see the changes.
-
-Learn more about Slidev at the [documentation](https://sli.dev/).
+For build instructions of all slides at once, see [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
