@@ -1,0 +1,45 @@
+name: Deploy pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: |
+          pnpm run build --base /${{github.event.repository.name}}/ slides/index.md
+          mv slides/dist .
+
+          find slides -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | xargs -I{} pnpm run build --base /${{github.event.repository.name}}/{}/ slides/{}/{}.md
+          find slides -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | xargs -I{} mv slides/{}/dist dist/{}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
